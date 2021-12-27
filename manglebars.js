@@ -1,22 +1,29 @@
-document.addEventListener("DOMContentLoaded", () => {
-  template_function = Manglebars.compile(
-    document.querySelector("#main").innerHTML
-  );
-
-  const html = template_function(template_data);
-
-  document.querySelector("#main").insertAdjacentHTML('afterend', html);
-});
+'use strict';
 
 const Manglebars = {
-  special_operators: {
-    'each': function(array, template) {
+  registerHelper(name, func) {
+    this.special_forms[name] = func;
+  },
+
+  special_forms: {
+    each: function(array, template) {
       let html = '';
-      templates_data = array[0];
+      let templates_data = array[0];
 
       templates_data.forEach(template_data => {
         html += Manglebars.compile(template)(template_data);
       });
+
+      return html;
+    },
+
+    if: function(args, template) {
+      let html = '';
+
+      let bool = args[0];
+      if (bool) {
+        html = Manglebars.compile(template)(template_data);
+      }
 
       return html;
     },
@@ -44,7 +51,8 @@ const Manglebars = {
               return template_data[binding];
             });
 
-            html += Manglebars.special_operators[branch.name](args, branch.template)
+            html += Manglebars.special_forms[branch.name](args, branch.template)
+
             break;
           default:
             throw `Invalid token: ${branch}`
@@ -214,11 +222,4 @@ const Manglebars = {
 
     return [template_text.slice(i), token];
   },
-};
-
-const template_data = {
-  title: "My Article Title",
-  paragraphs: [ { paragraph: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." },
-
-  { paragraph: "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." }],
 };
